@@ -17,7 +17,7 @@ router.get('/', express.json(), async (req, res) => {
         username: user.username,
 		full_name: user.full_name,
         email: user.email,
-		password: buffer.from(`${user.hash_password}`, 'base64').toString('ascii')
+		password: user.hash_password
 		}))
 	);
 });
@@ -63,7 +63,7 @@ router.post('/auth', express.json(), async (req, res) => {
 router.put('/edit', express.json(), async (req, res) => {
 
 	const { id, password } = req.body;
-	const edited_user = await Workshop.editCoordinator(id, password);
+	const edited_user = await Workshop.editCoordinator(id, buffer.from(password).toString('base64'));
 	const user_data = await Workshop.getCoordinators(id);
 
 	if(!edited_user) return res.sendStatus(500);

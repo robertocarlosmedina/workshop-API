@@ -1,3 +1,4 @@
+const Workshop = require('../db/workshop');
 
 class AuxiliarFunction{
   
@@ -6,9 +7,32 @@ class AuxiliarFunction{
      * @param {*} all_user 
      * Generate a unique code for a new user
      */
-    static personalCodeGenerator(all_user) {
+    static personalCodeGenerator = async (all_user_codes=null) => {
+        if (! all_user_codes){all_user_codes = await this.getRegisteredUsersCodes();}
 
+        const code_length = 6;
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        console.log("\n\n\n", all_user_codes, "\n\n\n");
+
+        let personal_code = '';
+        for (let i = 0; i < code_length; i++) {
+            personal_code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+
+        if (all_user_codes.includes(personal_code)){   //prevents duplicate codes
+            return personalCodeGenerator(all_user_codes);
+        }
+        return personal_code;
     }
+
+    static getRegisteredUsersCodes =  async () => {
+		const all_users = await Workshop.getRegisteredUsers();
+		let user_codes = [];
+		for (let i = 0; i < all_users.length; i++) {
+            user_codes.push(all_users[i].personal_code);
+		}
+        return user_codes;
+	}
 
     /**
      * 
