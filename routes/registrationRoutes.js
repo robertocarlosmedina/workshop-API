@@ -3,6 +3,7 @@ const router = express.Router();
 router.use(express.json());
 
 const Workshop = require('../db/workshop');
+const Auxiliar = require('../src/auxiliarFunction');
 const Validation = require('../src/validations');
 
 
@@ -25,18 +26,20 @@ router.get('/', express.json(), async (req, res) => {
 });
 
 router.post('/make_registration', express.json(), async (req, res) => {
-	const { 
-        email, full_name, scholar_year, degree_type, 
-        course_description, phone_number, presential } = req.body;
+	const { email, full_name, scholar_year, degree_type, course_name, presential} = req.body;
+
+    const personal_code = await Auxiliar.personalCodeGenerator();
+    
     const new_registre = {
         email: email, 
         full_name: full_name, 
+        personal_code: personal_code,
         scholar_year: scholar_year, 
         degree_type: degree_type, 
-        course_description: course_description, 
-        phone_number: phone_number, 
+        course_name: course_name, 
         presential: presential
     }
+
 	const all_users = await Workshop.getRegisteredUsers();
 	const userAlredyExits = Validation.checkIfRegisteAlreadyExists(new_registre.email, all_users);
 

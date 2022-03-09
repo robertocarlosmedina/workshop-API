@@ -1,3 +1,4 @@
+const { user } = require('pg/lib/defaults');
 const DB = require('./db')
 
 class Workshop {
@@ -28,7 +29,7 @@ class Workshop {
 	 */
 	static postCoordinators =  async (username, email, hash_password) => {
 		const sql = `INSERT INTO coordenator (email , username, full_name, hash_password) VALUES 
-		("${email}", "", "${username}", "${hash_password}");`;	
+		("${email}", "${username}", "", "${hash_password}");`;	
 		const results = await DB.Insert(sql);
 		return results;
 	}
@@ -41,8 +42,7 @@ class Workshop {
 	 */
 	static editCoordinator =  async (id, password) => {
 		
-		const sql = `UPDATE coordenator SET hash_password="${password}"
-		 WHERE id=${id};`;
+		const sql = `UPDATE coordenator SET hash_password="${password}" WHERE id=${id};`;
 		return await DB.Update(sql);
 	}
 
@@ -52,7 +52,7 @@ class Workshop {
 	 * @returns 
 	 */
 	static deleteCoordinator =  async (id) => {
-		const sql = `DELETE FROM coordenators WHERE id=${id}`;
+		const sql = `DELETE FROM coordenator WHERE id=${id}`;
 		return await DB.Delete(sql);
 	}
 
@@ -77,13 +77,16 @@ class Workshop {
 		return await DB.Select(sql);
 	}
 
+
 	static postNewRegistration =  async (new_registre) => {
-		const sql = `INSERT INTO coordenators (email, full_name, scholar_year, degree_type, 
-			course_description, phone_number, presential) VALUES 
-		("${new_registre.email}", "${new_registre.full_name}", 
-		"${new_registre.scholar_year}","${new_registre.degree_type}", 
-		"${new_registre.course_description}", "${new_registre.phone_number}", 
-		"${new_registre.presential}");`;	
+		const sql = `INSERT INTO user_register (email, full_name, personal_code, scholar_year, degree_type, course_name, presential) VALUES 
+		("${new_registre.email}",
+		"${new_registre.full_name}",
+		"${new_registre.personal_code}", 
+		"${new_registre.scholar_year}",
+		"${new_registre.degree_type}", 
+		"${new_registre.course_name}",
+		${new_registre.presential});`;	
 		const results = await DB.Insert(sql);
 		return results;
 	}
