@@ -28,7 +28,7 @@ class Workshop {
 	 */
 	static postCoordinators =  async (username, email, hash_password) => {
 		const sql = `INSERT INTO coordenator (email , username, full_name, hash_password) VALUES 
-		("${email}", "", "${username}", "${hash_password}");`;	
+		("${email}", "${username}", "", "${hash_password}");`;	
 		const results = await DB.Insert(sql);
 		return results;
 	}
