@@ -1,5 +1,5 @@
 {
-  "name": "masrapt-api",
+  "name": "workshop-api",
   "version": "1.0.0",
   "description": "API for tracking bus position.",
   "main": "index.js",
