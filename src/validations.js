@@ -45,8 +45,54 @@ class Validation {
    * Check if the team member is in another team
    */
   static checkTeamMemberAvailability(all_teams, id_team_member) {
+    for (let i = 0; i < all_teams.length; i++) {
+      if (all_teams[i].id_first_member === id_team_member ||
+          all_teams[i].id_second_member === id_team_member){
+            return false;
+      } 
+    }
     return true;
   }
+
+
+  static teamIsInvalid(all_teams, new_team) {
+    if (new_team.team_name === null ||
+       new_team.id_first_member == false ||
+       new_team.id_first_member === new_team.id_second_member){
+          return true
+    }
+
+    if (!all_teams){return false}
+
+    for (let i = 0; i < all_teams.length; i++) {
+      if (all_teams[i].team_name === new_team.team_name ||
+          all_teams[i].id_first_member === new_team.id_first_member ||
+          all_teams[i].id_second_member === new_team.id_first_member){
+            return true;
+      } 
+    }
+    return false;
+  }
+
+  static gradeIsInvalid(all_grades, grade) {
+    if (grade.code_readability_grade > 10 || grade.code_readability_grade < 0 ||
+        grade.algorithm_efficiency_grade > 10 || grade.algorithm_efficiency_grade < 0 ||
+        grade.completed_tasks_grade > 10 || grade.completed_tasks_grade < 0 ||
+        grade.creativity_grade > 10 || grade.creativity_grade < 0 ||
+        grade.result_analisys_grade > 10 || grade.result_analisys_grade < 0
+       ){
+          return true
+    }
+
+    for (let i = 0; i < all_grades.length; i++) {
+      if (all_grades[i].id_team === grade.id_team && all_grades[i].id_coordenator === grade.id_coordenator){
+            return true;
+      }
+    }
+
+    return false;
+  }
+
 }
 
 module.exports = Validation;
