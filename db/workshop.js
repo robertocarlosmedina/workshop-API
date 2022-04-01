@@ -74,6 +74,18 @@ class Workshop {
     return await DB.Select(sql);
   };
 
+  static getAllTeams = async () => {
+    return await DB.Select( `select * from wsh_team`);
+  };
+
+  static getAllGrades = async () => {
+    return await DB.Select( `select * from wsh_grade`);
+  };
+
+  static getTeam = async (id) => {
+    return await DB.Select( `select * from wsh_team WHERE id=${id}`);
+  };
+
   static postNewRegistration = async (new_registre) => {
     const sql = `INSERT INTO user_register (email, full_name, personal_code, scholar_year, degree_type, course_name, presential) VALUES 
 		("${new_registre.email}",
@@ -86,6 +98,42 @@ class Workshop {
     const results = await DB.Insert(sql);
     return results;
   };
+
+  static postNewTeam = async (new_team) => {
+    const sql = `INSERT INTO wsh_team (team_name, id_first_member, id_second_member) VALUES 
+    ("${new_team.team_name}",
+      ${new_team.id_first_member},
+      ${new_team.id_second_member}
+    );`
+    
+    const results = await DB.Insert(sql);
+    return results;
+  };
+
+  static postNewGrade = async (new_grade) => {
+    const sql = `INSERT INTO wsh_grade 
+    (id_team,
+     id_coordenator,
+     code_readability, 
+     algorithm_efficiency, 
+     completed_tasks, 
+     creativity, 
+     results_analysis
+    )
+    VALUES 
+    (${new_grade.id_team},
+      ${new_grade.id_coordenator},
+      ${new_grade.code_readability_grade},
+      ${new_grade.algorithm_efficiency_grade},
+      ${new_grade.completed_tasks_grade},
+      ${new_grade.creativity_grade},
+      ${new_grade.result_analisys_grade}
+    );`
+    
+    const results = await DB.Insert(sql);
+    return results;
+  };
 }
+
 
 module.exports = Workshop;

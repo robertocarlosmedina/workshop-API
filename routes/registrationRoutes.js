@@ -24,6 +24,25 @@ router.get("/", express.json(), async (req, res) => {
   );
 });
 
+router.post("/auth_participant", express.json(), async (req, res) => {
+  const { userPersonalCode } = req.body;
+  const validAuth = await Validation.authenticateUserPersonalCode(userPersonalCode)
+  if (validAuth) {
+    return res.json({
+      statusCode: 200,
+      errorMessage: null,
+      successMessage: "Participant Authenticated with his Personal Code.",
+      data: null,
+    });
+  }
+  return res.json({
+    statusCode: 401,
+    errorMessage: null,
+    successMessage: "User doesn't exist",
+    data: null,
+  });
+});
+
 router.post("/make_registration", express.json(), async (req, res) => {
   const {
     email,
@@ -53,7 +72,12 @@ router.post("/make_registration", express.json(), async (req, res) => {
   );
 
   if (userAlredyExits) {
-    return res.sendStatus(401);
+    return res.json({
+      statusCode: 401,
+      errorMessage: "Email already used by a registred user.",
+      successMessage: null,
+      data: null,
+    });
   }
 
   const new_user = await Workshop.postNewRegistration(new_registre);
@@ -61,7 +85,12 @@ router.post("/make_registration", express.json(), async (req, res) => {
   const last_user = updated_all_users[updated_all_users.length - 1];
   if (!new_user) return res.sendStatus(500);
 
-  return res.json(last_user);
+  return res.json({
+    statusCode: 200,
+    errorMessage: null,
+    successMessage: "Registration Successfully Completed.",
+    data: { userPersonalCode: last_user.personal_code },
+  });
 });
 
 module.exports = router;
