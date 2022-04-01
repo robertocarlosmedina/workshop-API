@@ -81,8 +81,10 @@ class AuxiliarFunction{
             }
 		}
 	}
-
     
+    static generatJSONResponseObject = (statusCode, errorMessage, successMessage, data) =>{
+        return {statusCode: statusCode, errorMessage: errorMessage, successMessage: successMessage, data: data} 
+    }
 }
 
 module.exports = AuxiliarFunction;
