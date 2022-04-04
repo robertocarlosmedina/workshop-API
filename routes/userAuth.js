@@ -4,6 +4,7 @@ router.use(express.json());
 
 const Workshop = require("../db/workshop");
 const Validation = require("../src/validations");
+const Auxiliar = require("../src/auxiliarFunction");
 const buffer = require("buffer/").Buffer;
 
 router.get("/", express.json(), async (req, res) => {
@@ -63,9 +64,27 @@ router.post("/auth", express.json(), async (req, res) => {
   });
 
   if (authenticated_user.length > 0) {
-    return res.json(authenticated_user[0]);
+    return res.json(
+      Auxiliar.generatJSONResponseObject(
+        200,
+        null,
+        "User Authenticated Successfully.",
+        {
+          username: authenticated_user[0].username,
+          fullName: authenticated_user[0].full_name,
+          email: authenticated_user[0].email,
+        }
+      )
+    );
   }
-  return res.sendStatus(401);
+  return res.json(
+    Auxiliar.generatJSONResponseObject(
+      401,
+      "Fail making user Authentication.",
+      null,
+      null
+    )
+  );
 });
 
 router.put("/edit", express.json(), async (req, res) => {
