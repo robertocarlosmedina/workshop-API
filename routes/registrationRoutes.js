@@ -6,15 +6,32 @@ const Workshop = require("../db/workshop");
 const Auxiliar = require("../src/auxiliarFunction");
 const Validation = require("../src/validations");
 
-router.get("/", express.json(), async (req, res) => {
+router.get("/:accessToken", express.json(), async (req, res) => {
   const users = await Workshop.getRegisteredUsers();
+  const all_users = await Workshop.getCoordinators();
+  const accessToken = req.params.accessToken;
+
+  const authAccessToken = all_users.filter((user) => {
+    return user.access_token === accessToken;
+  });
+
+  if (!authAccessToken.length) {
+    return res.json(
+      Auxiliar.generatJSONResponseObject(
+        200,
+        "Fail making user Authentication.",
+        null,
+        null
+      )
+    );
+  }
 
   if (!users) return res.sendStatus(500); // internal error
   return res.json(
     Auxiliar.generatJSONResponseObject(
       200,
       null,
-      "Participant Authenticated with his Personal Code.",
+      "User Successfully Authenticated",
       users.map((user) => ({
         id: user.id,
         email: user.email,

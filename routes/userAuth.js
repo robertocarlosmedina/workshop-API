@@ -5,7 +5,6 @@ router.use(express.json());
 const Workshop = require("../db/workshop");
 const Validation = require("../src/validations");
 const Auxiliar = require("../src/auxiliarFunction");
-const buffer = require("buffer/").Buffer;
 
 router.get("/", express.json(), async (req, res) => {
   const users = await Workshop.getCoordinators();
@@ -38,7 +37,7 @@ router.post("/create", express.json(), async (req, res) => {
   const new_user = await Workshop.postCoordinators(
     name,
     email,
-    buffer.from(password).toString("base64")
+    Auxiliar.base64Encoder(password)
   );
   const updated_all_users = await Workshop.getCoordinators();
 
@@ -59,11 +58,13 @@ router.post("/auth", express.json(), async (req, res) => {
     return (
       (user.username === email_or_username ||
         user.email === email_or_username) &&
-      password === buffer.from(user.hash_password, "base64").toString("ascii")
+      password === Auxiliar.base64Decoder(user.hash_password)
     );
   });
 
   if (authenticated_user.length > 0) {
+    const accessToken = Auxiliar.generateAccessToken();
+    Workshop.addCoordinatorAccessToken(authenticated_user[0].id, accessToken);
     return res.json(
       Auxiliar.generatJSONResponseObject(
         200,
@@ -73,6 +74,7 @@ router.post("/auth", express.json(), async (req, res) => {
           username: authenticated_user[0].username,
           fullName: authenticated_user[0].full_name,
           email: authenticated_user[0].email,
+          accessToken: accessToken,
         }
       )
     );
@@ -87,11 +89,47 @@ router.post("/auth", express.json(), async (req, res) => {
   );
 });
 
+router.get(
+  "/authAccessToken/:accessToken",
+  express.json(),
+  async (req, res) => {
+    const accessToken = req.params.accessToken;
+    const all_users = await Workshop.getCoordinators();
+
+    const authAccessToken = all_users.filter((user) => {
+      return user.access_token === accessToken;
+    });
+
+    if (authAccessToken.length > 0) {
+      return res.json(
+        Auxiliar.generatJSONResponseObject(
+          200,
+          null,
+          "User Authenticated with the Access Token",
+          {
+            username: authAccessToken[0].username,
+            fullName: authAccessToken[0].full_name,
+          }
+        )
+      );
+    }
+
+    return res.json(
+      Auxiliar.generatJSONResponseObject(
+        401,
+        "Fail making user Authentication.",
+        null,
+        null
+      )
+    );
+  }
+);
+
 router.put("/edit", express.json(), async (req, res) => {
   const { id, password } = req.body;
   const edited_user = await Workshop.editCoordinator(
     id,
-    buffer.from(password).toString("base64")
+    Auxiliar.base64Encoder(password)
   );
   const user_data = await Workshop.getCoordinators(id);
 

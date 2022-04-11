@@ -47,6 +47,17 @@ class Workshop {
   /**
    *
    * @param {*} id
+   * @param {*} access_token
+   * @returns
+   */
+   static addCoordinatorAccessToken = async (id, access_token) => {
+    const sql = `UPDATE coordenator SET access_token="${access_token}" WHERE id=${id};`;
+    return await DB.Update(sql);
+  };
+
+  /**
+   *
+   * @param {*} id
    * @returns
    */
   static deleteCoordinator = async (id) => {
