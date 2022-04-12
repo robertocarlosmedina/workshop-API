@@ -33,13 +33,12 @@ router.get("/:accessToken", express.json(), async (req, res) => {
       null,
       "User Successfully Authenticated",
       users.map((user) => ({
-        id: user.id,
         email: user.email,
-        full_name: user.full_name,
-        personal_code: user.personal_code,
-        scholar_year: user.scholar_year,
+        name: user.full_name,
+        personalCode: user.personal_code,
+        schoolYear: user.scholar_year,
         degree_type: user.degree_type,
-        course_name: user.course_name,
+        course: user.course_name,
         presential: user.presential,
       }))
     )
