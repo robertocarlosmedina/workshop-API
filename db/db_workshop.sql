@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 07, 2022 at 10:37 PM
--- Server version: 8.0.28-0ubuntu0.20.04.3
+-- Generation Time: Apr 12, 2022 at 10:49 PM
+-- Server version: 8.0.28-0ubuntu0.20.04.4
 -- PHP Version: 7.4.3
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -35,15 +35,16 @@ CREATE TABLE `coordenator` (
   `email` varchar(250) NOT NULL,
   `username` varchar(100) NOT NULL,
   `full_name` varchar(255) NOT NULL,
-  `hash_password` varchar(30) NOT NULL
+  `hash_password` varchar(30) NOT NULL,
+  `access_token` varchar(355) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
 -- Dumping data for table `coordenator`
 --
 
-INSERT INTO `coordenator` (`id`, `email`, `username`, `full_name`, `hash_password`) VALUES
-(3, 'rmedina@uta.cv', '', 'Roberto Medina', 'bm9zc29tb3M=');
+INSERT INTO `coordenator` (`id`, `email`, `username`, `full_name`, `hash_password`, `access_token`) VALUES
+(3, 'rmedina@uta.cv', '', 'Roberto Medina', 'bm9zc29tb3M=', 'cUp6dzlUUnlOY2gyYU53V2E4aHJPYzg3');
 
 -- --------------------------------------------------------
 
@@ -61,6 +62,14 @@ CREATE TABLE `user_register` (
   `course_name` varchar(30) NOT NULL,
   `presential` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Dumping data for table `user_register`
+--
+
+INSERT INTO `user_register` (`id`, `email`, `full_name`, `personal_code`, `scholar_year`, `degree_type`, `course_name`, `presential`) VALUES
+(1, 'algo6@uta.cv', 'PropMim6 Silva', 'yG0iut', '3', 'PhD', 'LEIT', 1),
+(2, 'ffaw@mfs.c', 'Roberto Medina', 'Oumq63', '2º Ano', 'Bachelor', 'fwe wq ', 1);
 
 -- --------------------------------------------------------
 
@@ -141,7 +150,7 @@ ALTER TABLE `coordenator`
 -- AUTO_INCREMENT for table `user_register`
 --
 ALTER TABLE `user_register`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `wsh_grade`
