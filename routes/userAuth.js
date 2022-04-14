@@ -64,6 +64,8 @@ router.post("/auth", express.json(), async (req, res) => {
 
   if (authenticated_user.length > 0) {
     const accessToken = Auxiliar.generateAccessToken();
+    console.log(authenticated_user[0].id)
+    setTimeout(Validation.eraseTokenAccess, 60000*5, authenticated_user[0].id)
     Workshop.addCoordinatorAccessToken(authenticated_user[0].id, accessToken);
     return res.json(
       Auxiliar.generatJSONResponseObject(

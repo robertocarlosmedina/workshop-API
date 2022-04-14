@@ -6,40 +6,76 @@ const Workshop = require("../db/workshop");
 const Auxiliar = require("../src/auxiliarFunction");
 const Validation = require("../src/validations");
 
-router.get("/:accessToken", express.json(), async (req, res) => {
-  const users = await Workshop.getRegisteredUsers();
-  const all_users = await Workshop.getCoordinators();
-  const accessToken = req.params.accessToken;
 
-  const authAccessToken = all_users.filter((user) => {
-    return user.access_token === accessToken;
-  });
+router.get(
+  "/participantsInfo/:accessToken",
+  express.json(),
+  async (req, res) => {
+    const users = await Workshop.getRegisteredUsers();
+    const all_users = await Workshop.getCoordinators();
+    const accessToken = req.params.accessToken;
 
-  if (!authAccessToken.length) {
+    const authAccessToken = all_users.filter((user) => {
+      return user.access_token === accessToken;
+    });
+
+    if (!authAccessToken.length) {
+      return res.json(
+        Auxiliar.generatJSONResponseObject(
+          401,
+          "Fail making user Authentication.",
+          null,
+          null
+        )
+      );
+    }
+
+    if (!users) return res.sendStatus(500); // internal error
     return res.json(
       Auxiliar.generatJSONResponseObject(
         200,
-        "Fail making user Authentication.",
+        null,
+        "User Successfully Authenticated",
+        users.map((user) => ({
+          email: user.email,
+          name: user.full_name,
+          personalCode: user.personal_code,
+          schoolYear: user.scholar_year,
+          degree_type: user.degree_type,
+          course: user.course_name,
+          presential: user.presential,
+        }))
+      )
+    );
+  }
+);
+
+router.get("/availableTeamMembers", express.json(), async (req, res) => {
+  const users = await Workshop.getRegisteredUsers();
+  const allTeam = await Workshop.getAllTeams();
+
+  const availableUsers = users.filter((user) =>{
+    return Validation.checkTeamMemberAvailability(allTeam, user.id)
+  })
+
+  if (!availableUsers)
+    return res.json(
+      Auxiliar.generatJSONResponseObject(
+        401,
+        "No team member available",
         null,
         null
       )
     );
-  }
 
-  if (!users) return res.sendStatus(500); // internal error
   return res.json(
     Auxiliar.generatJSONResponseObject(
       200,
       null,
-      "User Successfully Authenticated",
-      users.map((user) => ({
-        email: user.email,
+      "There are team members available",
+      availableUsers.map((user) => ({
+        participantId: user.id,
         name: user.full_name,
-        personalCode: user.personal_code,
-        schoolYear: user.scholar_year,
-        degree_type: user.degree_type,
-        course: user.course_name,
-        presential: user.presential,
       }))
     )
   );

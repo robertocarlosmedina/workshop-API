@@ -1,4 +1,5 @@
 const AuxiliarFunctions = require("../src/auxiliarFunction");
+const Workshop = require("../db/workshop");
 
 class Validation {
   /**
@@ -36,10 +37,21 @@ class Validation {
    * Authenticate the user if the personal code match
    */
   static authenticateUserPersonalCode = async (user_personal_code) => {
-    const allRegistredUserCodes =  await AuxiliarFunctions.getRegisteredUsersCodes();
+    const allRegistredUserCodes =
+      await AuxiliarFunctions.getRegisteredUsersCodes();
     if (allRegistredUserCodes.includes(user_personal_code)) return true;
     return false;
-  }
+  };
+
+  /**
+   * 
+   * @param {*} userID 
+   * @returns 
+   */
+  static eraseTokenAccess = async (userID) => {
+    const response = await Workshop.addCoordinatorAccessToken(userID, "");
+    return response;
+  };
 
   /**
    *
