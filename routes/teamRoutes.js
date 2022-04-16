@@ -6,17 +6,28 @@ const Workshop = require("../db/workshop");
 const Auxiliar = require("../src/auxiliarFunction");
 const Validation = require("../src/validations");
 
-router.get("/", express.json(), async (req, res) => {
-  const users = await Workshop.getAllTeams();
+router.get("/:accessToken", express.json(), async (req, res) => {
+  const teams = await Workshop.getAllTeams();
+  const users = await Workshop.getRegisteredUsers();
+  const { accessToken } = req.params.accessToken;
+
+  const authAccessToken = users.filter((user) => {
+    return user.access_token === accessToken;
+  });
 
   if (!users) return res.sendStatus(500); // internal error
 
   return res.json(
-    users.map((team) => ({
+    teams.map((team) => ({
       id: team.id,
       team_name: team.team_name,
-      id_first_member: team.id_first_member,
-      id_second_member: team.id_second_member,
+      members: [
+        Auxiliar.makeTeamsJsonFormat(users, team.id_first_member),
+        Auxiliar.makeTeamsJsonFormat(users, team.id_second_member),
+      ],
+      gradeInfo: [
+        
+      ],
       final_grade: team.final_grade,
     }))
   );

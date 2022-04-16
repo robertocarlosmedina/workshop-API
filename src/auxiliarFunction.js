@@ -113,12 +113,36 @@ class AuxiliarFunction {
     };
   };
 
+  /**
+   * Method to enconde a string
+   * @param {*} string
+   * @returns
+   */
   static base64Encoder = (string) => {
     return buffer.from(string).toString("base64");
   };
 
+  /**
+   * Method to decode a string
+   * @param {*} string
+   * @returns
+   */
   static base64Decoder = (string) => {
     return buffer.from(string, "base64").toString("ascii");
+  };
+
+  /**
+   * Method to tetunr the name and the email of a user
+   * according the the userID 
+   * @param {*} allUsers 
+   * @param {*} userID 
+   * @returns 
+   */
+  static makeTeamsJsonFormat = (allUsers, userID) => {
+    const user = allUsers.filter((user) => {
+      return user.id === userID;
+    });
+    return { name: user[0].full_name, email: user[0].email };
   };
 }
 
