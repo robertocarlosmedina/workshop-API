@@ -50,11 +50,11 @@ router.post("/create", express.json(), async (req, res) => {
 
 router.post("/auth", express.json(), async (req, res) => {
   const { email_or_username, password } = req.body;
-  const all_users = await Workshop.getCoordinators();
+  const allCoordinators = await Workshop.getCoordinators();
 
-  if (!all_users) return res.sendStatus(500);
+  if (!allCoordinators) return res.sendStatus(500);
 
-  const authenticated_user = all_users.filter((user) => {
+  const authenticated_user = allCoordinators.filter((user) => {
     return (
       (user.username === email_or_username ||
         user.email === email_or_username) &&
@@ -64,8 +64,12 @@ router.post("/auth", express.json(), async (req, res) => {
 
   if (authenticated_user.length > 0) {
     const accessToken = Auxiliar.generateAccessToken();
-    console.log(authenticated_user[0].id)
-    setTimeout(Validation.eraseTokenAccess, 60000*5, authenticated_user[0].id)
+    // console.log(authenticated_user[0].id)
+    setTimeout(
+      Validation.eraseTokenAccess,
+      60000 * 5,
+      authenticated_user[0].id
+    );
     Workshop.addCoordinatorAccessToken(authenticated_user[0].id, accessToken);
     return res.json(
       Auxiliar.generatJSONResponseObject(
