@@ -90,7 +90,7 @@ class Workshop {
   };
 
   static getAllGrades = async () => {
-    return await DB.Select( `select * from wsh_grade`);
+    return await DB.Select( `select * from wsh_grade;`);
   };
 
   static getTeam = async (id) => {
@@ -128,7 +128,7 @@ class Workshop {
      code_readability, 
      algorithm_efficiency, 
      completed_tasks, 
-     creativity, 
+     creactivity, 
      results_analysis
     )
     VALUES 

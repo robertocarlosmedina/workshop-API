@@ -6,30 +6,57 @@ const Workshop = require("../db/workshop");
 const Auxiliar = require("../src/auxiliarFunction");
 const Validation = require("../src/validations");
 
-router.get("/:accessToken", express.json(), async (req, res) => {
+router.get("/allteams/:accessToken", express.json(), async (req, res) => {
   const teams = await Workshop.getAllTeams();
   const users = await Workshop.getRegisteredUsers();
+  const allGrades = await Workshop.getAllGrades();
+  let coordinatorGrades;
   const { accessToken } = req.params.accessToken;
 
   const authAccessToken = users.filter((user) => {
     return user.access_token === accessToken;
   });
 
-  if (!users) return res.sendStatus(500); // internal error
+  if (authAccessToken.length === 0) {
+    return res.json(
+      Auxiliar.generatJSONResponseObject(
+        401,
+        "Fail making Authencication",
+        null,
+        null
+      )
+    );
+  }
+
+  coordinatorGrades = allGrades.filter((grade) => {
+    return grade.id_coordinator === authAccessToken.id;
+  });
+
+  if (!users) return res.json(
+    Auxiliar.generatJSONResponseObject(
+      500,
+      "Action Interropted by an Internal Error",
+      null,
+      null
+    )
+  ); // internal error
 
   return res.json(
-    teams.map((team) => ({
-      id: team.id,
-      team_name: team.team_name,
-      members: [
-        Auxiliar.makeTeamsJsonFormat(users, team.id_first_member),
-        Auxiliar.makeTeamsJsonFormat(users, team.id_second_member),
-      ],
-      gradeInfo: [
-        
-      ],
-      final_grade: team.final_grade,
-    }))
+    Auxiliar.generatJSONResponseObject(
+      200,
+      null,
+      "User Successfully Authenticated",
+      teams.map((team) => ({
+        id: team.id,
+        team_name: team.team_name,
+        members: [
+          Auxiliar.makeTeamsMembersJsonFormat(users, team.id_first_member),
+          Auxiliar.makeTeamsMembersJsonFormat(users, team.id_second_member),
+        ],
+        gradeInfo: Auxiliar.makeTeamsGradeInfoJson(coordinatorGrades, team.id),
+        final_grade: team.final_grade,
+      }))
+    )
   );
 });
 
@@ -66,36 +93,63 @@ router.post("/create_team", express.json(), async (req, res) => {
   );
 });
 
-router.post("/grade_team", express.json(), async (req, res) => {
+router.post("/gradeTeam/:accessToken", express.json(), async (req, res) => {
+  const users = await Workshop.getRegisteredUsers();
+  const { accessToken } = req.params.accessToken;
   const {
-    team_name,
-    coordinator_name,
-    code_readability_grade,
-    algorithm_efficiency_grade,
-    completed_tasks_grade,
-    creativity_grade,
-    result_analisys_grade,
+    teamID,
+    codeReadability,
+    algorithmEfficiency,
+    completedTasks,
+    creactivity,
+    resultAnalisys,
   } = req.body;
 
-  const id_team = await Auxiliar.getTeamIdFromName(team_name);
-  const id_coordinator = await Auxiliar.getCoordinatorIdFromName(
-    coordinator_name
-  );
-  const new_grade = {
-    id_team: id_team,
-    id_coordenator: id_coordinator,
-    code_readability_grade: code_readability_grade,
-    algorithm_efficiency_grade: algorithm_efficiency_grade,
-    completed_tasks_grade: completed_tasks_grade,
-    creativity_grade: creativity_grade,
-    result_analisys_grade: result_analisys_grade,
-  };
-  const all_grades = await Workshop.getAllGrades();
-  if (Validation.gradeIsInvalid(all_grades, new_grade)) {
-    return res.sendStatus(500);
+  const authAccessToken = users.filter((user) => {
+    return user.access_token === accessToken;
+  });
+  console.log("Okokok")
+  if (authAccessToken.length === 0) {
+    return res.json(
+      Auxiliar.generatJSONResponseObject(
+        401,
+        "Fail making Authencication",
+        null,
+        null
+      )
+    );
   }
-  Workshop.postNewGrade(new_grade);
-  return res.json(new_grade);
+
+  const newGrade = {
+    id_team: teamID,
+    id_coordenator: authAccessToken[0].id,
+    code_readability_grade: codeReadability,
+    algorithm_efficiency_grade: algorithmEfficiency,
+    completed_tasks_grade: completedTasks,
+    creativity_grade: creactivity,
+    result_analisys_grade: resultAnalisys,
+  };
+  console.log(newGrade)
+  const allGrades = await Workshop.getAllGrades();
+  if (Validation.gradeIsInvalid(allGrades, newGrade)) {
+    return res.json(
+      Auxiliar.generatJSONResponseObject(
+        500,
+        "Action Interropted by an Internal Error",
+        null,
+        null
+      )
+    );
+  }
+  // await Workshop.postNewGrade(newGrade);
+  return res.json(
+    Auxiliar.generatJSONResponseObject(
+      200,
+      null,
+      "Team Graded Successfully",
+      null
+    )
+  );
 });
 
 module.exports = router;

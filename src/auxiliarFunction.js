@@ -6,6 +6,13 @@ class AuxiliarFunction {
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   static code_length = 6;
   static accessTokenLength = 24;
+  static gradeMetrics = [
+    { name: "Code readability", percentage: 15 },
+    { name: "Algorithm Efficiency", percentage: 20 },
+    { name: "Completed Tasks", percentage: 30 },
+    { name: "Creativity", percentage: 5 },
+    { name: "Results Analysis", percentage: 30 },
+  ];
 
   /**
    *
@@ -16,8 +23,6 @@ class AuxiliarFunction {
     if (!all_user_codes) {
       all_user_codes = await this.getRegisteredUsersCodes();
     }
-
-    // console.log("\n\n\n", all_user_codes, "\n\n\n");
 
     let personal_code = "";
     for (let i = 0; i < this.code_length; i++) {
@@ -46,6 +51,10 @@ class AuxiliarFunction {
     return this.base64Encoder(accessToken);
   };
 
+  /**
+   * 
+   * @returns 
+   */
   static getRegisteredUsersCodes = async () => {
     const all_users = await Workshop.getRegisteredUsers();
     let user_codes = [];
@@ -66,7 +75,7 @@ class AuxiliarFunction {
   };
 
   /**
-   *
+   * 
    * @param {*} all_grades    Array of objects from all the grades
    * @param {*} id_team
    * Get the grade of a specific team from it's ID
@@ -90,6 +99,11 @@ class AuxiliarFunction {
     }
   };
 
+  /**
+   * 
+   * @param {*} coordinator_name 
+   * @returns 
+   */
   static getCoordinatorIdFromName = async (coordinator_name) => {
     const all_coordinators = await Workshop.getCoordinators();
     for (let i = 0; i < all_coordinators.length; i++) {
@@ -99,6 +113,14 @@ class AuxiliarFunction {
     }
   };
 
+  /**
+   * 
+   * @param {*} statusCode 
+   * @param {*} errorMessage 
+   * @param {*} successMessage 
+   * @param {*} data 
+   * @returns 
+   */
   static generatJSONResponseObject = (
     statusCode,
     errorMessage,
@@ -132,17 +154,51 @@ class AuxiliarFunction {
   };
 
   /**
-   * Method to tetunr the name and the email of a user
-   * according the the userID 
-   * @param {*} allUsers 
-   * @param {*} userID 
-   * @returns 
+   * Method to return the name and the email of a user
+   * according the the userID
+   * @param {*} allUsers
+   * @param {*} userID
+   * @returns
    */
-  static makeTeamsJsonFormat = (allUsers, userID) => {
+  static makeTeamsMembersJsonFormat = (allUsers, userID) => {
     const user = allUsers.filter((user) => {
       return user.id === userID;
     });
     return { name: user[0].full_name, email: user[0].email };
+  };
+
+  /**
+   * Method that return a JSON with the grade
+   * @param {*} coordinatorID
+   * @param {*} teamID
+   * @returns
+   */
+  static makeTeamsGradeInfoJson = (allGrades, teamID) => {
+    let gradeInfo;
+    let index_diff = 0;
+    const teamGrade = allGrades.filter((gradedTeam) => {
+      return gradedTeam.id_team === teamID;
+    });
+
+    // console.log(allGrades);
+    if(teamGrade.length === 0){
+      gradeInfo = this.gradeMetrics.map((matric, index) =>({
+        metricID: (index + teamID * 2) * teamID,
+        metricName: matric.name,
+        metricValue: 0,
+        metricPercentage: matric.percentage,
+      }))
+    }
+    // else{
+    //   const teamGrade.
+    //   gradeInfo = [
+    //     {
+
+    //     }
+    //   ]
+    // }
+    // console.log(gradeInfo)
+    return gradeInfo
   };
 }
 

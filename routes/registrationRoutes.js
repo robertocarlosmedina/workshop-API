@@ -30,7 +30,14 @@ router.get(
       );
     }
 
-    if (!users) return res.sendStatus(500); // internal error
+    if (!users) return res.json(
+      Auxiliar.generatJSONResponseObject(
+        500,
+        "Action Interropted by an Internal Error",
+        null,
+        null
+      )
+    ); // internal error
     return res.json(
       Auxiliar.generatJSONResponseObject(
         200,
