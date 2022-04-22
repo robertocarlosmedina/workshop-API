@@ -2,9 +2,9 @@
 -- version 4.9.5deb2
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Apr 12, 2022 at 10:49 PM
--- Server version: 8.0.28-0ubuntu0.20.04.4
+-- Host: localhost
+-- Generation Time: Apr 22, 2022 at 01:34 PM
+-- Server version: 8.0.28-0ubuntu0.20.04.3
 -- PHP Version: 7.4.3
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -44,7 +44,7 @@ CREATE TABLE `coordenator` (
 --
 
 INSERT INTO `coordenator` (`id`, `email`, `username`, `full_name`, `hash_password`, `access_token`) VALUES
-(3, 'rmedina@uta.cv', '', 'Roberto Medina', 'bm9zc29tb3M=', 'cUp6dzlUUnlOY2gyYU53V2E4aHJPYzg3');
+(3, 'rmedina@uta.cv', '', 'Roberto Medina', 'bm9zc29tb3M=', 'QnRvejZYQ2xIZGZFYzlPbUFzaUhHdVlQ');
 
 -- --------------------------------------------------------
 
@@ -69,7 +69,39 @@ CREATE TABLE `user_register` (
 
 INSERT INTO `user_register` (`id`, `email`, `full_name`, `personal_code`, `scholar_year`, `degree_type`, `course_name`, `presential`) VALUES
 (1, 'algo6@uta.cv', 'PropMim6 Silva', 'yG0iut', '3', 'PhD', 'LEIT', 1),
-(2, 'ffaw@mfs.c', 'Roberto Medina', 'Oumq63', '2º Ano', 'Bachelor', 'fwe wq ', 1);
+(2, 'ffaw@mfs.c', 'Roberto Medina', 'Oumq63', '2º Ano', 'Bachelor', 'fwe wq ', 1),
+(3, 'ana@gmail.com', 'Ana Celestina', 'pqnnTd', '1º Ano', 'Bachelor', 'LEIT Lt', 1),
+(4, 'ra@gmail.com', 'Ricardo Alexandre', 'bWevg5', '1º Ano', 'Bachelor', 'LEIT Lt', 1),
+(5, 'cm@gmail.com', 'Carlos Medina', '78ZHJD', '1º Ano', 'Bachelor', 'LEIT lt', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `whs_classes_calendar`
+--
+
+CREATE TABLE `whs_classes_calendar` (
+  `id` int NOT NULL,
+  `date_time` varchar(50) DEFAULT NULL,
+  `location` varchar(100) DEFAULT NULL,
+  `online_link` varchar(300) DEFAULT NULL,
+  `main_content` varchar(400) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `whs_main_calendar`
+--
+
+CREATE TABLE `whs_main_calendar` (
+  `id` int NOT NULL,
+  `users_start_registration` varchar(30) DEFAULT NULL,
+  `users_end_registration` varchar(30) DEFAULT NULL,
+  `competition_start_registration` varchar(30) DEFAULT NULL,
+  `competition_end_registration` varchar(30) DEFAULT NULL,
+  `grade_proccess_end_date` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -84,9 +116,17 @@ CREATE TABLE `wsh_grade` (
   `code_readability` int NOT NULL,
   `algorithm_efficiency` int NOT NULL,
   `completed_tasks` int NOT NULL,
-  `creativity` int NOT NULL,
+  `solution_creactivity` int NOT NULL,
   `results_analysis` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+
+--
+-- Dumping data for table `wsh_grade`
+--
+
+INSERT INTO `wsh_grade` (`id`, `id_team`, `id_coordenator`, `code_readability`, `algorithm_efficiency`, `completed_tasks`, `solution_creactivity`, `results_analysis`) VALUES
+(1, 1, 1, 1, 2, 3, 4, 5),
+(2, 2, 1, 1, 2, 3, 4, 5);
 
 -- --------------------------------------------------------
 
@@ -103,6 +143,15 @@ CREATE TABLE `wsh_team` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
+-- Dumping data for table `wsh_team`
+--
+
+INSERT INTO `wsh_team` (`id`, `id_first_member`, `id_second_member`, `final_grade`, `team_name`) VALUES
+(1, 1, 1, NULL, 'Coders'),
+(2, 3, 4, NULL, 'Programmers'),
+(3, 2, 2, NULL, 'Weber');
+
+--
 -- Indexes for dumped tables
 --
 
@@ -116,25 +165,31 @@ ALTER TABLE `coordenator`
 -- Indexes for table `user_register`
 --
 ALTER TABLE `user_register`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `personal_code` (`personal_code`);
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `whs_classes_calendar`
+--
+ALTER TABLE `whs_classes_calendar`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `whs_main_calendar`
+--
+ALTER TABLE `whs_main_calendar`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `wsh_grade`
 --
 ALTER TABLE `wsh_grade`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_team` (`id_team`),
-  ADD KEY `id_coordenator` (`id_coordenator`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `wsh_team`
 --
 ALTER TABLE `wsh_team`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `team_name` (`team_name`),
-  ADD KEY `id_first_member` (`id_first_member`),
-  ADD KEY `id_second_member` (`id_second_member`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -150,37 +205,31 @@ ALTER TABLE `coordenator`
 -- AUTO_INCREMENT for table `user_register`
 --
 ALTER TABLE `user_register`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `whs_classes_calendar`
+--
+ALTER TABLE `whs_classes_calendar`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `whs_main_calendar`
+--
+ALTER TABLE `whs_main_calendar`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `wsh_grade`
 --
 ALTER TABLE `wsh_grade`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `wsh_team`
 --
 ALTER TABLE `wsh_team`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `wsh_grade`
---
-ALTER TABLE `wsh_grade`
-  ADD CONSTRAINT `wsh_grade_ibfk_1` FOREIGN KEY (`id_team`) REFERENCES `wsh_team` (`id`),
-  ADD CONSTRAINT `wsh_grade_ibfk_2` FOREIGN KEY (`id_coordenator`) REFERENCES `coordenator` (`id`);
-
---
--- Constraints for table `wsh_team`
---
-ALTER TABLE `wsh_team`
-  ADD CONSTRAINT `wsh_team_ibfk_1` FOREIGN KEY (`id_first_member`) REFERENCES `user_register` (`id`),
-  ADD CONSTRAINT `wsh_team_ibfk_2` FOREIGN KEY (`id_second_member`) REFERENCES `user_register` (`id`);
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

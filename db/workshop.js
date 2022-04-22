@@ -128,7 +128,7 @@ class Workshop {
      code_readability, 
      algorithm_efficiency, 
      completed_tasks, 
-     creactivity, 
+     solution_creactivity, 
      results_analysis
     )
     VALUES 

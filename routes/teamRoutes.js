@@ -32,14 +32,15 @@ router.get("/allteams/:accessToken", express.json(), async (req, res) => {
     return grade.id_coordinator === authAccessToken.id;
   });
 
-  if (!users) return res.json(
-    Auxiliar.generatJSONResponseObject(
-      500,
-      "Action Interropted by an Internal Error",
-      null,
-      null
-    )
-  ); // internal error
+  if (!users)
+    return res.json(
+      Auxiliar.generatJSONResponseObject(
+        500,
+        "Action Interropted by an Internal Error",
+        null,
+        null
+      )
+    ); // internal error
 
   return res.json(
     Auxiliar.generatJSONResponseObject(
@@ -48,13 +49,17 @@ router.get("/allteams/:accessToken", express.json(), async (req, res) => {
       "User Successfully Authenticated",
       teams.map((team) => ({
         id: team.id,
-        team_name: team.team_name,
+        name: team.team_name,
         members: [
           Auxiliar.makeTeamsMembersJsonFormat(users, team.id_first_member),
           Auxiliar.makeTeamsMembersJsonFormat(users, team.id_second_member),
         ],
         gradeInfo: Auxiliar.makeTeamsGradeInfoJson(coordinatorGrades, team.id),
         final_grade: team.final_grade,
+        teamGraded: Auxiliar.checkIfTeamHadBeenGraded(
+          coordinatorGrades,
+          team.id
+        ),
       }))
     )
   );
@@ -69,6 +74,8 @@ router.post("/create_team", express.json(), async (req, res) => {
     id_first_member: id_first_member,
     id_second_member: id_second_member,
   };
+
+  console.log(new_team);
 
   const all_teams = await Workshop.getAllTeams();
   const invalidTeam = Validation.teamIsInvalid(all_teams, new_team); // if invalid should return the error
@@ -108,7 +115,7 @@ router.post("/gradeTeam/:accessToken", express.json(), async (req, res) => {
   const authAccessToken = users.filter((user) => {
     return user.access_token === accessToken;
   });
-  console.log("Okokok")
+
   if (authAccessToken.length === 0) {
     return res.json(
       Auxiliar.generatJSONResponseObject(
@@ -129,7 +136,7 @@ router.post("/gradeTeam/:accessToken", express.json(), async (req, res) => {
     creativity_grade: creactivity,
     result_analisys_grade: resultAnalisys,
   };
-  console.log(newGrade)
+
   const allGrades = await Workshop.getAllGrades();
   if (Validation.gradeIsInvalid(allGrades, newGrade)) {
     return res.json(
@@ -141,7 +148,7 @@ router.post("/gradeTeam/:accessToken", express.json(), async (req, res) => {
       )
     );
   }
-  // await Workshop.postNewGrade(newGrade);
+  await Workshop.postNewGrade(newGrade);
   return res.json(
     Auxiliar.generatJSONResponseObject(
       200,

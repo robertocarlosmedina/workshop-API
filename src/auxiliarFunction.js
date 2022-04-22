@@ -7,10 +7,10 @@ class AuxiliarFunction {
   static code_length = 6;
   static accessTokenLength = 24;
   static gradeMetrics = [
-    { name: "Code readability", percentage: 15 },
+    { name: "Code Readability", percentage: 10 },
     { name: "Algorithm Efficiency", percentage: 20 },
     { name: "Completed Tasks", percentage: 30 },
-    { name: "Creativity", percentage: 5 },
+    { name: "Solution Creactivity", percentage: 10 },
     { name: "Results Analysis", percentage: 30 },
   ];
 
@@ -52,8 +52,8 @@ class AuxiliarFunction {
   };
 
   /**
-   * 
-   * @returns 
+   *
+   * @returns
    */
   static getRegisteredUsersCodes = async () => {
     const all_users = await Workshop.getRegisteredUsers();
@@ -75,7 +75,7 @@ class AuxiliarFunction {
   };
 
   /**
-   * 
+   *
    * @param {*} all_grades    Array of objects from all the grades
    * @param {*} id_team
    * Get the grade of a specific team from it's ID
@@ -100,9 +100,9 @@ class AuxiliarFunction {
   };
 
   /**
-   * 
-   * @param {*} coordinator_name 
-   * @returns 
+   *
+   * @param {*} coordinator_name
+   * @returns
    */
   static getCoordinatorIdFromName = async (coordinator_name) => {
     const all_coordinators = await Workshop.getCoordinators();
@@ -114,12 +114,12 @@ class AuxiliarFunction {
   };
 
   /**
-   * 
-   * @param {*} statusCode 
-   * @param {*} errorMessage 
-   * @param {*} successMessage 
-   * @param {*} data 
-   * @returns 
+   *
+   * @param {*} statusCode
+   * @param {*} errorMessage
+   * @param {*} successMessage
+   * @param {*} data
+   * @returns
    */
   static generatJSONResponseObject = (
     statusCode,
@@ -168,6 +168,29 @@ class AuxiliarFunction {
   };
 
   /**
+   *
+   * @param {*} allGrades
+   * @param {*} teamID
+   * @returns
+   */
+  static filterTeamByID = (allGrades, teamID) => {
+    return allGrades.filter((gradedTeam) => {
+      return gradedTeam.id_team === teamID;
+    });
+  };
+
+  /**
+   *
+   * @param {*} allGrades
+   * @param {*} teamID
+   * @returns
+   */
+  static checkIfTeamHadBeenGraded = (allGrades, teamID) => {
+    if (this.filterTeamByID(allGrades, teamID).length === 0) return false;
+    else return true;
+  };
+
+  /**
    * Method that return a JSON with the grade
    * @param {*} coordinatorID
    * @param {*} teamID
@@ -175,30 +198,30 @@ class AuxiliarFunction {
    */
   static makeTeamsGradeInfoJson = (allGrades, teamID) => {
     let gradeInfo;
-    let index_diff = 0;
-    const teamGrade = allGrades.filter((gradedTeam) => {
-      return gradedTeam.id_team === teamID;
-    });
 
-    // console.log(allGrades);
-    if(teamGrade.length === 0){
-      gradeInfo = this.gradeMetrics.map((matric, index) =>({
+    const teamGrade = this.filterTeamByID(allGrades, teamID);
+
+    if (teamGrade.length === 0) {
+      gradeInfo = this.gradeMetrics.map((matric, index) => ({
         metricID: (index + teamID * 2) * teamID,
         metricName: matric.name,
         metricValue: 0,
         metricPercentage: matric.percentage,
-      }))
+      }));
+    } else {
+      gradeInfo = this.gradeMetrics.map((matric, index) => ({
+        metricID: index,
+        metricName: matric.name,
+        metricValue: eval(
+          "teamGrade[0]." +
+            matric.name.split(" ")[0].toLocaleLowerCase() +
+            "_" +
+            matric.name.split(" ")[1].toLocaleLowerCase()
+        ),
+        metricPercentage: matric.percentage,
+      }));
     }
-    // else{
-    //   const teamGrade.
-    //   gradeInfo = [
-    //     {
-
-    //     }
-    //   ]
-    // }
-    // console.log(gradeInfo)
-    return gradeInfo
+    return gradeInfo;
   };
 }
 
